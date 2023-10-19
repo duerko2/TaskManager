@@ -1,0 +1,5 @@
+package org.example;
+
+public enum Category {
+    WORK, PERSONAL, STUDY, HEALTH, SHOPPING, SOCIAL, TRAVEL, FINANCIAL, ENTERTAINMENT, OTHER
+}
