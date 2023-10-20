@@ -2,6 +2,8 @@
 import org.example.*;
 import org.example.IO.Input;
 import org.example.IO.Output;
+import org.example.wrongInputExceptions.WrongCategoryError;
+import org.example.wrongInputExceptions.WrongPriorityError;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

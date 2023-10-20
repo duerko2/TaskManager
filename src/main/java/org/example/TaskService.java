@@ -2,8 +2,11 @@ package org.example;
 
 import org.example.IO.Input;
 import org.example.IO.Output;
+import org.example.wrongInputExceptions.WrongCategoryError;
+import org.example.wrongInputExceptions.WrongFieldError;
+import org.example.wrongInputExceptions.WrongPriorityError;
+import org.example.wrongInputExceptions.WrongStatusError;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -118,13 +121,15 @@ public class TaskService {
         dataStorage.saveTask(task);
         output.print("Task updated successfully");
         } catch (WrongCategoryError wrongCategoryError) {
-            return;
+            output.print("Invalid category");
         } catch (WrongStatusError wrongStatusError) {
-            return;
+            output.print("Invalid status");
         } catch (WrongPriorityError wrongPriorityError) {
-            return;
+            output.print("Invalid priority");
         } catch (WrongFieldError wrongFieldError) {
-            return;
+            output.print("Invalid field");
+        } catch (ParseException e) {
+            output.print("Invalid date format");
         }
     }
 
@@ -136,7 +141,7 @@ public class TaskService {
     public List<Task> getAllTasks() {
         return dataStorage.getAllTasks();
     }
-    private Task getUpdatedTaskFromUser() throws WrongCategoryError, WrongStatusError, WrongPriorityError, WrongFieldError {
+    private Task getUpdatedTaskFromUser() throws WrongCategoryError, WrongStatusError, WrongPriorityError, WrongFieldError, ParseException {
         output.print("Enter task id for update");
         String id = input.getInput();
         Task task = dataStorage.getTask(id);
@@ -238,12 +243,10 @@ public class TaskService {
                 task.setStatus(status);
                 break;
             case "6":
-                output.print("Enter new due date");
-                int year =  input.getNumber();
-                int month =  input.getNumber();
-                int day = input.getNumber();
-                Date dueDate = new Date(year, month, day);
-                task.setDueDate(dueDate);
+                output.print("Enter new due date in dd/MM/yyyy format");
+                String dueDate = input.getInput();
+                Date date=new SimpleDateFormat("dd/MM/yyyy").parse(dueDate);
+                task.setDueDate(date);
                 break;
             default:
                 throw new WrongFieldError("Invalid field");
