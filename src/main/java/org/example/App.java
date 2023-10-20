@@ -3,15 +3,19 @@ package org.example;
 import org.example.IO.Input;
 import org.example.IO.Output;
 
+import java.text.ParseException;
+
 public class App {
     TaskService taskService;
+    TaskDisplayService taskDisplayService;
     Output output;
     Input input;
 
-    public App(TaskService taskService, Output output, Input input) {
+    public App(TaskService taskService, Output output, Input input, TaskDisplayService taskDisplayService) {
         this.taskService = taskService;
         this.output = output;
         this.input = input;
+        this.taskDisplayService = taskDisplayService;
     }
 
     public void startApp() {
@@ -25,7 +29,15 @@ public class App {
             String in = input.getInput();
             switch (in) {
                 case "1":
-                    taskService.createTask();
+                    try {
+                        taskService.createTask();
+                    } catch (WrongCategoryError e) {
+                        output.print(e.getMessage());
+                    }  catch (WrongPriorityError e) {
+                        output.print(e.getMessage());
+                    } catch (ParseException e) {
+                        output.print("Wrong date format");
+                    }
                     break;
                 case "2":
                     taskService.deleteTask();
@@ -34,7 +46,8 @@ public class App {
                     taskService.updateTask();
                     break;
                 case "4":
-                    taskService.getTask("1");
+                    Task task = taskService.getTask("1");
+                    taskDisplayService.displayTask(task);
                     break;
                 case "5":
                     taskService.getAllTasks();
