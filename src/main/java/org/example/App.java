@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.IO.Input;
 import org.example.IO.Output;
+import org.example.model.Task;
 import org.example.wrongInputExceptions.WrongCategoryError;
 import org.example.wrongInputExceptions.WrongPriorityError;
 
@@ -25,8 +26,8 @@ public class App {
             output.print("1. Add task");
             output.print("2. Delete task");
             output.print("3. Update task");
-            output.print("4. Get task");
-            output.print("5. Get all tasks");
+            output.print("4. Show task");
+            output.print("5. Show all tasks");
             output.print("6. Exit");
             String in = input.getInput();
             switch (in) {

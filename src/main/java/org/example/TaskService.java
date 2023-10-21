@@ -1,7 +1,12 @@
 package org.example;
 
+import org.example.IO.DataStorage;
 import org.example.IO.Input;
 import org.example.IO.Output;
+import org.example.model.Category;
+import org.example.model.Priority;
+import org.example.model.Status;
+import org.example.model.Task;
 import org.example.wrongInputExceptions.WrongCategoryError;
 import org.example.wrongInputExceptions.WrongFieldError;
 import org.example.wrongInputExceptions.WrongPriorityError;
@@ -99,11 +104,10 @@ public class TaskService {
                 priority,
                 date,
                 new Date(),
-                null);
-
-
-
+                null
+        );
         dataStorage.saveTask(task);
+        output.print("Task created successfully");
     }
     public void deleteTask() {
         // get input from user delete the task and then save to data storage
