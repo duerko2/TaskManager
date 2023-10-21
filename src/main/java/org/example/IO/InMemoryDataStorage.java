@@ -1,5 +1,6 @@
 package org.example.IO;
 
+import org.example.IO.exceptions.NoSuchTaskException;
 import org.example.model.Task;
 
 import java.util.ArrayList;
@@ -12,11 +13,6 @@ public class InMemoryDataStorage implements DataStorage{
 
     public InMemoryDataStorage() {
         taskMap = new HashMap<>();
-    }
-
-    @Override
-    public Task loadTask(String id) {
-        return taskMap.get(id);
     }
 
     @Override
@@ -35,8 +31,12 @@ public class InMemoryDataStorage implements DataStorage{
     }
 
     @Override
-    public Task getTask(String id) {
-        return taskMap.get(id);
+    public Task getTask(String id) throws NoSuchTaskException {
+        Task task = taskMap.get(id);
+        if (task == null) {
+            throw new NoSuchTaskException("No task with id: " + id);
+        }
+        return task;
     }
     @Override
     public String getNewId() {

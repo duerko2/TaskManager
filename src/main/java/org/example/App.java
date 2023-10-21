@@ -50,8 +50,12 @@ public class App {
                     taskService.updateTask();
                     break;
                 case "4":
-                    Task task = taskService.getTask();
-                    taskDisplayService.displayTask(task);
+                    try{
+                        Task task = taskService.getTask();
+                        taskDisplayService.displayTask(task);
+                    } catch (Exception e) {
+                        output.print(e.getMessage());
+                    }
                     break;
                 case "5":
                     List<Task> tasks = taskService.getAllTasks();

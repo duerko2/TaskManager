@@ -2,6 +2,7 @@
 import org.example.*;
 import org.example.IO.DataStorage;
 import org.example.IO.Input;
+import org.example.IO.exceptions.NoSuchTaskException;
 import org.example.IO.Output;
 import org.example.model.Category;
 import org.example.model.Priority;
@@ -73,7 +74,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void testDeleteTask() {
+    public void testDeleteTask() throws NoSuchTaskException {
         Task task = new Task(Category.WORK, "Sample Task","SampleID","Sample Task Name", Status.CREATED, Priority.LOW, null, null, null);
         when(input.getInput()).thenReturn("1");
         when(dataStorage.getTask("1")).thenReturn(task);
@@ -85,7 +86,7 @@ public class TaskServiceTest {
 
     // Write tests for updateTask and other methods similarly
     @Test
-    public void testUpdateTask(){
+    public void testUpdateTask() throws NoSuchTaskException {
         Task task = new Task(Category.WORK, "Sample Task","SampleID","Sample Task Name", Status.CREATED, Priority.LOW, null, null, null);
         when(input.getInput()).thenReturn("1");
         when(dataStorage.getTask("1")).thenReturn(task);
