@@ -38,5 +38,9 @@ public class InMemoryDataStorage implements DataStorage{
     public Task getTask(String id) {
         return taskMap.get(id);
     }
+    @Override
+    public String getNewId() {
+        return String.valueOf(taskMap.size() + 1);
+    }
 
 }

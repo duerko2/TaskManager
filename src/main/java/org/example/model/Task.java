@@ -98,4 +98,19 @@ public class Task {
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "category=" + category +
+                ", description='" + description + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", priority=" + priority +
+                ", dueDate=" + dueDate +
+                ", createdDate=" + createdDate +
+                ", updatedDate=" + updatedDate +
+                '}';
+    }
 }

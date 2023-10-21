@@ -30,10 +30,57 @@ public class TaskService {
 
     public void createTask() throws WrongCategoryError, WrongPriorityError, ParseException {
         // get input from user create the task and then save to data storage
-        output.print("Enter task name");
-        String name = input.getInput();
-        output.print("Enter task description");
-        String description = input.getInput();
+        String name = getTaskName();
+        String description = getTaskDescription();
+        Category category = getTaskCategory();
+        Priority priority = getTaskPriority();
+        Date date = getTaskDueDate();
+
+        Task task = new Task(
+                category,
+                description,
+                dataStorage.getNewId(),
+                name,
+                Status.CREATED,
+                priority,
+                date,
+                new Date(),
+                null
+        );
+
+        dataStorage.saveTask(task);
+        output.print("Task created successfully with id:" + task.getId());
+    }
+
+    private Date getTaskDueDate() throws ParseException{
+        output.print("Enter task due date in dd/MM/yyyy format");
+        String dueDate = input.getInput();
+        return new SimpleDateFormat("dd/MM/yyyy").parse(dueDate);
+    }
+
+
+    private Priority getTaskPriority() throws WrongPriorityError{
+        output.print("Enter task priority");
+        output.print("1: LOW, 2: MEDIUM, 3: HIGH");
+        String priorityString = input.getInput();
+        Priority priority;
+        switch(priorityString){
+            case "1":
+                priority = Priority.LOW;
+                break;
+            case "2":
+                priority = Priority.MEDIUM;
+                break;
+            case "3":
+                priority = Priority.HIGH;
+                break;
+            default:
+                throw new WrongPriorityError("Invalid priority");
+        }
+        return priority;
+    }
+
+    private Category getTaskCategory() throws WrongCategoryError {
         output.print("Enter number corresponding to correct category");
         output.print("1: WORK, 2: PERSONAL, 3: STUDY, 4: HEALTH,");
         output.print("5: SHOPPING, 6: SOCIAL, 7: TRAVEL, 8:FINANCIAL");
@@ -74,41 +121,19 @@ public class TaskService {
             default:
                 throw new WrongCategoryError("Invalid category");
         }
-        output.print("Enter task priority");
-        output.print("1: LOW, 2: MEDIUM, 3: HIGH");
-        String priorityString = input.getInput();
-        Priority priority;
-        switch(priorityString){
-            case "1":
-                priority = Priority.LOW;
-                break;
-            case "2":
-                priority = Priority.MEDIUM;
-                break;
-            case "3":
-                priority = Priority.HIGH;
-                break;
-            default:
-                throw new WrongPriorityError("Invalid priority");
-        }
-        Status status = Status.CREATED;
-        output.print("Enter task due date in dd/MM/yyyy format");
-        String dueDate = input.getInput();
-        Date date=new SimpleDateFormat("dd/MM/yyyy").parse(dueDate);
-        Task task = new Task(
-                category,
-                description,
-                "1",
-                name ,
-                status,
-                priority,
-                date,
-                new Date(),
-                null
-        );
-        dataStorage.saveTask(task);
-        output.print("Task created successfully");
+        return category;
     }
+
+    private String getTaskDescription() {
+        output.print("Enter task description");
+        return input.getInput();
+    }
+
+    private String getTaskName() {
+        output.print("Enter task name");
+        return input.getInput();
+    }
+
     public void deleteTask() {
         // get input from user delete the task and then save to data storage
 
@@ -139,7 +164,9 @@ public class TaskService {
 
 
 
-    public Task getTask(String id) {
+    public Task getTask() {
+        output.print("Enter task id");
+        String id = input.getInput();
         return dataStorage.loadTask(id);
     }
     public List<Task> getAllTasks() {

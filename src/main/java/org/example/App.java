@@ -7,6 +7,7 @@ import org.example.wrongInputExceptions.WrongCategoryError;
 import org.example.wrongInputExceptions.WrongPriorityError;
 
 import java.text.ParseException;
+import java.util.List;
 
 public class App {
     TaskService taskService;
@@ -23,12 +24,12 @@ public class App {
 
     public void startApp() {
         while(true) {
-            output.print("1. Add task");
-            output.print("2. Delete task");
-            output.print("3. Update task");
-            output.print("4. Show task");
-            output.print("5. Show all tasks");
-            output.print("6. Exit");
+            output.print("1 Add task");
+            output.print("2 Delete task");
+            output.print("3 Update task");
+            output.print("4 Show task");
+            output.print("5 Show all tasks");
+            output.print("6 Exit");
             String in = input.getInput();
             switch (in) {
                 case "1":
@@ -49,11 +50,12 @@ public class App {
                     taskService.updateTask();
                     break;
                 case "4":
-                    Task task = taskService.getTask("1");
+                    Task task = taskService.getTask();
                     taskDisplayService.displayTask(task);
                     break;
                 case "5":
-                    taskService.getAllTasks();
+                    List<Task> tasks = taskService.getAllTasks();
+                    taskDisplayService.displayTaskList(tasks);
                     break;
                 case "6":
                     closeApp();
@@ -65,7 +67,11 @@ public class App {
 
     }
     public void closeApp(){
-
+        output.print("Are you sure you want to exit? (y/n)");
+        String in = input.getInput();
+        if(in.equals("y") || in.equals("Y")) {
+            System.exit(0);
+        }
     }
 
 }

@@ -10,4 +10,5 @@ public interface DataStorage {
     void deleteTask(Task id);
     List<Task> getAllTasks();
     Task getTask(String id);
+    String getNewId();
 }
