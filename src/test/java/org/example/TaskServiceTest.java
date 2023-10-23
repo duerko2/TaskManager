@@ -3,6 +3,8 @@ package org.example;
 import org.example.*;
 import org.example.IO.DataStorage;
 import org.example.IO.Input;
+import org.example.IO.exceptions.CouldNotDeleteTaskException;
+import org.example.IO.exceptions.CouldNotSaveTaskException;
 import org.example.IO.exceptions.NoSuchTaskException;
 import org.example.IO.Output;
 import org.example.model.Category;
@@ -39,7 +41,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void testCreateTaskValid() throws WrongCategoryError, WrongPriorityError, ParseException {
+    public void testCreateTaskValid() throws WrongCategoryError, WrongPriorityError, ParseException, CouldNotSaveTaskException {
         when(input.getInput()).thenReturn("Sample Task", "Description", "1", "1", "04/14/1995");
 
         taskService.createTask();
@@ -48,7 +50,7 @@ public class TaskServiceTest {
     }
 
     @Test(expected = WrongCategoryError.class)
-    public void testCreateTaskInvalidCategory() throws WrongCategoryError, WrongPriorityError, ParseException {
+    public void testCreateTaskInvalidCategory() throws WrongCategoryError, WrongPriorityError, ParseException, CouldNotSaveTaskException {
         when(input.getInput()).thenReturn("Sample Task", "Description", "99", "1", "04/14/1995");
 
         taskService.createTask();
@@ -56,7 +58,7 @@ public class TaskServiceTest {
         verify(dataStorage, never()).saveTask(any(Task.class));
     }
     @Test(expected = WrongPriorityError.class)
-    public void testCreateTaskInvalidPriority() throws WrongCategoryError, WrongPriorityError, ParseException {
+    public void testCreateTaskInvalidPriority() throws WrongCategoryError, WrongPriorityError, ParseException, CouldNotSaveTaskException {
         when(input.getInput()).thenReturn("Sample Task", "Description", "1", "99", "04/14/1995");
 
         taskService.createTask();
@@ -66,7 +68,7 @@ public class TaskServiceTest {
 
     // Write similar tests for createTask for other invalid cases
     @Test(expected = ParseException.class)
-    public void testCreateTaskInvalidDate() throws WrongCategoryError, WrongPriorityError, ParseException {
+    public void testCreateTaskInvalidDate() throws WrongCategoryError, WrongPriorityError, ParseException, CouldNotSaveTaskException {
         when(input.getInput()).thenReturn("Sample Task", "Description", "1", "1", "14-04-1995");
 
         taskService.createTask();
@@ -75,7 +77,7 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void testDeleteTask() throws NoSuchTaskException {
+    public void testDeleteTask() throws NoSuchTaskException, CouldNotDeleteTaskException {
         Task task = new Task(Category.WORK, "Sample Task","SampleID","Sample Task Name", Status.CREATED, Priority.LOW, null, null, null);
         when(input.getInput()).thenReturn("1");
         when(dataStorage.getTask("1")).thenReturn(task);
@@ -87,7 +89,7 @@ public class TaskServiceTest {
 
     // Write tests for updateTask and other methods similarly
     @Test
-    public void testUpdateTask() throws NoSuchTaskException {
+    public void testUpdateTask() throws NoSuchTaskException, CouldNotSaveTaskException {
         Task task = new Task(Category.WORK, "Sample Task","SampleID","Sample Task Name", Status.CREATED, Priority.LOW, null, null, null);
         when(input.getInput()).thenReturn("1");
         when(dataStorage.getTask("1")).thenReturn(task);
