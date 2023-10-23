@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.IO.Output;
-import org.example.IO.StdOutput;
 import org.example.model.Task;
 
 import java.util.List;
@@ -13,11 +12,11 @@ public class TaskDisplayService {
         this.displayStrategy = new StandardDisplayStrategy(output);
     }
     public void displayTask(Task task) {
-        displayStrategy.execute(task);
+        displayStrategy.display(task);
     }
     public void displayTaskList(List<Task> tasks) {
         for (Task task : tasks) {
-            displayStrategy.execute(task);
+            displayStrategy.display(task);
         }
     }
 

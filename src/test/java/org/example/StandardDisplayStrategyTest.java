@@ -1,8 +1,6 @@
 package org.example;
 
 import junit.framework.TestCase;
-import org.example.IO.DataStorage;
-import org.example.IO.Input;
 import org.example.IO.Output;
 import org.example.model.Category;
 import org.example.model.Priority;
@@ -30,10 +28,10 @@ public class StandardDisplayStrategyTest extends TestCase {
     }
 
 
-    public void testExecute() {
+    public void testDisplay() {
         Task task = createSampleTask("1");
 
-        standardDisplayStrategy.execute(task);
+        standardDisplayStrategy.display(task);
 
         verify(output).print("Task: Sample Task Name\n" +
                 "Description: Sample Task\n" +

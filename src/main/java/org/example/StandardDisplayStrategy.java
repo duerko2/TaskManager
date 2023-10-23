@@ -13,7 +13,7 @@ public class StandardDisplayStrategy implements DisplayStrategy {
     }
 
     @Override
-    public void execute(Task task) {
+    public void display(Task task) {
         LocalDate updatedDate = task.getUpdatedDate() == null ? null : task.getUpdatedDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
         LocalDate createdDate =  task.getCreatedDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
         LocalDate dueDate = task.getDueDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
