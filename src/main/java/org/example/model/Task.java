@@ -27,6 +27,10 @@ public class Task {
         this.updatedDate = updatedDate;
     }
 
+    public Task() {
+
+    }
+
     public Category getCategory() {
         return category;
     }

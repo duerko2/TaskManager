@@ -2,6 +2,8 @@ package org.example;
 
 import org.example.IO.DataStorage;
 import org.example.IO.Input;
+import org.example.IO.exceptions.CouldNotDeleteTaskException;
+import org.example.IO.exceptions.CouldNotSaveTaskException;
 import org.example.IO.exceptions.NoSuchTaskException;
 import org.example.IO.Output;
 import org.example.model.Category;
@@ -49,8 +51,12 @@ public class TaskService {
                 null
         );
 
-        dataStorage.saveTask(task);
-        output.print("Task created successfully with id:" + task.getId());
+        try {
+            dataStorage.saveTask(task);
+            output.print("Task created successfully with id:" + task.getId());
+        } catch (CouldNotSaveTaskException e) {
+            output.print(e.getMessage());
+        }
     }
 
 
@@ -60,11 +66,13 @@ public class TaskService {
         Task task;
         try {
             task = getTask();
+            dataStorage.deleteTask(task);
         } catch (NoSuchTaskException e) {
             output.print(e.getMessage());
-            return;
+        } catch (CouldNotDeleteTaskException e) {
+            output.print(e.getMessage());
         }
-        dataStorage.deleteTask(task);
+
     }
     public void updateTask() {
         try {
@@ -84,6 +92,8 @@ public class TaskService {
             output.print("Invalid field");
         } catch (ParseException e) {
             output.print("Invalid date format");
+        } catch (CouldNotSaveTaskException e) {
+            output.print(e.getMessage());
         }
     }
 
@@ -94,7 +104,7 @@ public class TaskService {
         String id = input.getInput();
         return dataStorage.getTask(id);
     }
-    public List<Task> getAllTasks() {
+    public List<Task> getAllTasks() throws NoSuchTaskException {
         return dataStorage.getAllTasks();
     }
     private Task getUpdatedTaskFromUser() throws WrongCategoryError, WrongStatusError, WrongPriorityError, WrongFieldError, ParseException {

@@ -58,8 +58,12 @@ public class App {
                     }
                     break;
                 case "5":
-                    List<Task> tasks = taskService.getAllTasks();
-                    taskDisplayService.displayTaskList(tasks);
+                    try {
+                        List<Task> tasks = taskService.getAllTasks();
+                        taskDisplayService.displayTaskList(tasks);
+                    } catch (Exception e) {
+                        output.print(e.getMessage());
+                    }
                     break;
                 case "6":
                     closeApp();
