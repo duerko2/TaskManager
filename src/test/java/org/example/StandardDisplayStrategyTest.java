@@ -1,12 +1,13 @@
 package org.example;
 
-import junit.framework.TestCase;
 import org.example.IO.Output;
 import org.example.model.Category;
 import org.example.model.Priority;
 import org.example.model.Status;
 import org.example.model.Task;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.text.ParseException;
@@ -16,18 +17,18 @@ import java.util.Date;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class StandardDisplayStrategyTest extends TestCase {
+public class StandardDisplayStrategyTest {
     StandardDisplayStrategy standardDisplayStrategy;
     @Mock
     private Output output;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         output = mock(Output.class);
         standardDisplayStrategy = new StandardDisplayStrategy(output);
     }
 
-
+    @Test
     public void testDisplay() {
         Task task = createSampleTask("1");
 

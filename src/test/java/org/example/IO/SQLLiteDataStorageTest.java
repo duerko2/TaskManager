@@ -1,15 +1,55 @@
 package org.example.IO;
 
-import junit.framework.TestCase;
+import org.example.IO.exceptions.CouldNotDeleteTaskException;
+import org.example.IO.exceptions.CouldNotSaveTaskException;
+import org.example.IO.exceptions.NoSuchTaskException;
+import org.example.model.Category;
+import org.example.model.Priority;
+import org.example.model.Status;
+import org.example.model.Task;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class SQLLiteDataStorageTest extends TestCase {
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
+public class SQLLiteDataStorageTest {
 
-    public void setUp() throws Exception {
-        super.setUp();
+    private SQLLiteDataStorage dataStorage;
+
+    @BeforeEach
+    public void setUp() {
+        try {
+            dataStorage = new SQLLiteDataStorage("jdbc:sqlite:sample.db");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void testSaveTask() {
+    @AfterEach
+    public void tearDown() {
+        try {
+            List<Task> tasks = dataStorage.getAllTasks();
+            for (Task task : tasks) {
+                dataStorage.deleteTask(task);
+            }
+        } catch (NoSuchTaskException e) {
+            throw new RuntimeException(e);
+        } catch (CouldNotDeleteTaskException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testSaveTask() throws CouldNotSaveTaskException, NoSuchTaskException {
+        Task task = createSampleTask("1");
+        dataStorage.saveTask(task);
+
     }
 
     public void testDeleteTask() {
@@ -22,5 +62,26 @@ public class SQLLiteDataStorageTest extends TestCase {
     }
 
     public void testGetNewId() {
+    }
+
+    private Task createSampleTask(String id) {
+        try {
+            Date createdDate = new SimpleDateFormat("dd/MM/yyyy").parse("31/12/2023");
+            Date dueDate = new SimpleDateFormat("dd/MM/yyyy").parse("21/01/2024");
+            return new Task(
+                    Category.WORK,
+                    "Sample Task",
+                    id,
+                    "Sample Task Name",
+                    Status.CREATED,
+                    Priority.LOW,
+                    dueDate,
+                    createdDate,
+                    createdDate
+            );
+        } catch (ParseException e) {
+            // Handle parsing exception if needed
+            return null;
+        }
     }
 }

@@ -10,7 +10,6 @@ import org.example.model.Task;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class SQLLiteDataStorage implements DataStorage {
@@ -24,41 +23,67 @@ public class SQLLiteDataStorage implements DataStorage {
     }
 
     private void initializeDatabase() throws SQLException{
+
         Connection connection = DriverManager.getConnection(databaseURL);
         Statement statement = connection.createStatement();
 
         statement.execute(
                 "CREATE TABLE IF NOT EXISTS tasks (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "name TEXT, " +
+                    "nameString TEXT, " +
                     "description TEXT, " +
-                    "category NUMBER, " +
-                    "priority NUMBER, " +
-                    "status NUMBER, " +
+                    "category INTEGER, " +
+                    "priority INTEGER, " +
+                    "status INTEGER, " +
                     "dueDate DATE, " +
                     "createdDate DATE, " +
                     "updatedDate DATE" +
                     ")"
         );
+        System.out.println("Database initialized");
         connection.close();
     }
     @Override
     public void saveTask(Task task) throws CouldNotSaveTaskException {
-        try {
+        try (Connection connection = DriverManager.getConnection(databaseURL)){
+            PreparedStatement ps = connection.prepareStatement(
+                    "INSERT INTO tasks (" +
+                            "nameString, " +
+                            "description, " +
+                            "category, " +
+                            "priority, " +
+                            "status, " +
+                            "dueDate, " +
+                            "createdDate, " +
+                            "updatedDate) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            ps.setString(1, task.getName());
+            ps.setString(2, task.getDescription());
+            ps.setInt(3, task.getCategory().ordinal());
+            ps.setInt(4, task.getPriority().ordinal());
+            ps.setInt(5, task.getStatus().ordinal());
+            ps.setDate(6, new Date(task.getDueDate().getTime()));
+            ps.setDate(7, new Date(task.getCreatedDate().getTime()));
+            ps.setDate(8, new Date(task.getUpdatedDate().getTime()));
+            ps.executeUpdate();
+
+/*
             Statement statement = connection.createStatement();
             statement.execute(
-                    "INSERT INTO tasks (name, description, category, priority, status, dueDate, createdDate, updatedDate) " +
+                    "INSERT INTO tasks (nameString, description, category, priority, status, dueDate, createdDate, updatedDate) " +
                             "VALUES (" +
                             task.getName() + ", " +
                             task.getDescription() + ", " +
                             task.getCategory().ordinal() + ", " +
                             task.getPriority().ordinal() + ", " +
                             task.getStatus().ordinal() + ", " +
-                            task.getDueDate() + ", " +
-                            task.getCreatedDate() + ", " +
-                            task.getUpdatedDate() +
+                            new Date(task.getDueDate().getTime()) + ", " +
+                            new Date(task.getCreatedDate().getTime()) + ", " +
+                            new Date(task.getUpdatedDate().getTime()) +
                             ")"
             );
+
+ */
         } catch (SQLException e) {
             throw new CouldNotSaveTaskException("Problem saving task to database"+e.getMessage());
         }
@@ -66,10 +91,10 @@ public class SQLLiteDataStorage implements DataStorage {
 
     @Override
     public void deleteTask(Task id) throws CouldNotDeleteTaskException {
-        try {
+        try (Connection connection = DriverManager.getConnection(databaseURL)){
             Statement statement = connection.createStatement();
             statement.execute(
-                    "DELETE FROM tasks WHERE id = " + id
+                    "DELETE FROM tasks WHERE id = " + id.getId()
             );
         } catch (SQLException e) {
             throw new CouldNotDeleteTaskException("Problem deleting task from database"+e.getMessage());
@@ -150,15 +175,15 @@ public class SQLLiteDataStorage implements DataStorage {
     private Task mapResultSetToTask(ResultSet resultSet) throws NoSuchTaskException {
         Task task = new Task();
         try {
-            task.setId(resultSet.getString("id"));
-            task.setName(resultSet.getString("name"));
+            task.setId(resultSet.getInt("id") + "");
+            task.setName(resultSet.getString("nameString"));
             task.setDescription(resultSet.getString("description"));
             task.setCategory(Category.values()[resultSet.getInt("category")]);
             task.setPriority(Priority.values()[resultSet.getInt("priority")]);
             task.setStatus(Status.values()[resultSet.getInt("status")]);
-            task.setDueDate(resultSet.getDate("dueDate"));
-            task.setCreatedDate(resultSet.getDate("createdDate"));
-            task.setUpdatedDate(resultSet.getDate("updatedDate"));
+            task.setDueDate(new java.util.Date(resultSet.getDate("dueDate").getTime()));
+            task.setCreatedDate(new java.util.Date(resultSet.getDate("createdDate").getTime()));
+            task.setUpdatedDate(new java.util.Date(resultSet.getDate("updatedDate").getTime()));
         } catch (SQLException e) {
             throw new NoSuchTaskException("Problem mapping result set to task" + e.getMessage());
         }

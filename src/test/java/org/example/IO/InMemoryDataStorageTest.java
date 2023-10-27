@@ -5,19 +5,22 @@ import org.example.model.Category;
 import org.example.model.Priority;
 import org.example.model.Status;
 import org.example.model.Task;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class InMemoryDataStorageTest {
     private InMemoryDataStorage dataStorage;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         dataStorage = new InMemoryDataStorage();
     }
@@ -52,9 +55,11 @@ public class InMemoryDataStorageTest {
         assertEquals(task, retrievedTask);
     }
 
-    @Test(expected = NoSuchTaskException.class)
+    @Test
     public void getTaskNoSuchTask() throws NoSuchTaskException {
-        dataStorage.getTask("2");  // Task with ID "2" does not exist, so an exception should be thrown
+        assertThrows(NoSuchTaskException.class, () -> {
+            dataStorage.getTask("2"); // Task with ID "2" does not exist, so an exception should be thrown
+        });
     }
 
     @Test
