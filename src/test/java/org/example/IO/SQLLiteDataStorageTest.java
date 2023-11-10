@@ -8,15 +8,17 @@ import org.example.model.Priority;
 import org.example.model.Status;
 import org.example.model.Task;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SQLLiteDataStorageTest {
 
@@ -47,9 +49,10 @@ public class SQLLiteDataStorageTest {
 
     @Test
     public void testSaveTask() throws CouldNotSaveTaskException, NoSuchTaskException {
-        Task task = createSampleTask("1");
-        dataStorage.saveTask(task);
-
+        Task saveTask = createSampleTask();
+        dataStorage.saveTask(saveTask);
+        Task retrieveTask = dataStorage.getTask(saveTask.getId());
+        assertEquals(saveTask,retrieveTask);
     }
 
     public void testDeleteTask() {
@@ -64,7 +67,9 @@ public class SQLLiteDataStorageTest {
     public void testGetNewId() {
     }
 
-    private Task createSampleTask(String id) {
+    private Task createSampleTask() {
+        String id = dataStorage.getNewId();
+
         try {
             Date createdDate = new SimpleDateFormat("dd/MM/yyyy").parse("31/12/2023");
             Date dueDate = new SimpleDateFormat("dd/MM/yyyy").parse("21/01/2024");

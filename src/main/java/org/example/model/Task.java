@@ -117,4 +117,10 @@ public class Task {
                 ", updatedDate=" + updatedDate +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object t){
+        return t.toString().equals(this.toString());
+
+    }
 }

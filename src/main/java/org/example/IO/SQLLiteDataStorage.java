@@ -29,7 +29,7 @@ public class SQLLiteDataStorage implements DataStorage {
 
         statement.execute(
                 "CREATE TABLE IF NOT EXISTS tasks (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "id INTEGER PRIMARY KEY, " +
                     "nameString TEXT, " +
                     "description TEXT, " +
                     "category INTEGER, " +
@@ -40,7 +40,6 @@ public class SQLLiteDataStorage implements DataStorage {
                     "updatedDate DATE" +
                     ")"
         );
-        System.out.println("Database initialized");
         connection.close();
     }
     @Override
@@ -48,6 +47,7 @@ public class SQLLiteDataStorage implements DataStorage {
         try (Connection connection = DriverManager.getConnection(databaseURL)){
             PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO tasks (" +
+                            "id,"+
                             "nameString, " +
                             "description, " +
                             "category, " +
@@ -56,34 +56,18 @@ public class SQLLiteDataStorage implements DataStorage {
                             "dueDate, " +
                             "createdDate, " +
                             "updatedDate) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            ps.setString(1, task.getName());
-            ps.setString(2, task.getDescription());
-            ps.setInt(3, task.getCategory().ordinal());
-            ps.setInt(4, task.getPriority().ordinal());
-            ps.setInt(5, task.getStatus().ordinal());
-            ps.setDate(6, new Date(task.getDueDate().getTime()));
-            ps.setDate(7, new Date(task.getCreatedDate().getTime()));
-            ps.setDate(8, new Date(task.getUpdatedDate().getTime()));
+                    "VALUES (?,?, ?, ?, ?, ?, ?, ?, ?)");
+            ps.setInt(1,Integer.parseInt(task.getId()));
+            ps.setString(2, task.getName());
+            ps.setString(3, task.getDescription());
+            ps.setInt(4, task.getCategory().ordinal());
+            ps.setInt(5, task.getPriority().ordinal());
+            ps.setInt(6, task.getStatus().ordinal());
+            ps.setDate(7, new Date(task.getDueDate().getTime()));
+            ps.setDate(8, new Date(task.getCreatedDate().getTime()));
+            ps.setDate(9, new Date(task.getUpdatedDate().getTime()));
             ps.executeUpdate();
 
-/*
-            Statement statement = connection.createStatement();
-            statement.execute(
-                    "INSERT INTO tasks (nameString, description, category, priority, status, dueDate, createdDate, updatedDate) " +
-                            "VALUES (" +
-                            task.getName() + ", " +
-                            task.getDescription() + ", " +
-                            task.getCategory().ordinal() + ", " +
-                            task.getPriority().ordinal() + ", " +
-                            task.getStatus().ordinal() + ", " +
-                            new Date(task.getDueDate().getTime()) + ", " +
-                            new Date(task.getCreatedDate().getTime()) + ", " +
-                            new Date(task.getUpdatedDate().getTime()) +
-                            ")"
-            );
-
- */
         } catch (SQLException e) {
             throw new CouldNotSaveTaskException("Problem saving task to database"+e.getMessage());
         }
@@ -110,14 +94,14 @@ public class SQLLiteDataStorage implements DataStorage {
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
-                Task task = mapResultSetToTask(resultSet);
+                Task task = new Task();
+                mapResultSetToTask(resultSet,task);
                 tasks.add(task);
             }
+            return tasks;
         } catch (SQLException e) {
             throw new NoSuchTaskException("Problem getting all tasks from database\n" + e.getMessage());
         }
-
-        return tasks;
     }
 
 
@@ -125,19 +109,22 @@ public class SQLLiteDataStorage implements DataStorage {
     @Override
     public Task getTask(String id) throws NoSuchTaskException {
         Task task = new Task();
-        String sql = "SELECT * FROM tasks WHERE id = " + id;
 
-        try (Connection connection = DriverManager.getConnection(databaseURL);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
-            while (resultSet.next()) {
-                task = mapResultSetToTask(resultSet);
+
+        try (Connection connection = DriverManager.getConnection(databaseURL)){
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM tasks WHERE id = ?");
+            ps.setString(1, id);
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                mapResultSetToTask(resultSet,task);
+                return task;
+            } else {
+                throw new NoSuchTaskException("Problem getting task from database");
             }
         } catch (SQLException e) {
             throw new NoSuchTaskException("Problem getting task from database\n" + e.getMessage());
         }
 
-        return task;
     }
 
     @Override
@@ -148,11 +135,12 @@ public class SQLLiteDataStorage implements DataStorage {
         }
 
         String newId = null;
-        String maxIdSql = "SELECT max(id) FROM tasks";
 
-        try (Connection connection = DriverManager.getConnection(databaseURL);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(maxIdSql)) {
+        try (Connection connection = DriverManager.getConnection(databaseURL)){
+
+            PreparedStatement ps = connection.prepareStatement("SELECT max(id) FROM tasks");
+            ResultSet resultSet = ps.executeQuery();
+
 
             if (resultSet.next()) {
                 int maxId = resultSet.getInt(1);
@@ -161,19 +149,17 @@ public class SQLLiteDataStorage implements DataStorage {
                 // If the table is empty, start with ID 1
                 newId = "1";
             }
+
+            // Cache the new ID in memory
+            cachedID = newId;
+            return newId;
         } catch (SQLException e) {
             e.printStackTrace();
+            return "0";
         }
-
-
-        // Cache the new ID in memory
-        cachedID = newId;
-
-        return newId;
     }
 
-    private Task mapResultSetToTask(ResultSet resultSet) throws NoSuchTaskException {
-        Task task = new Task();
+    private void mapResultSetToTask(ResultSet resultSet, Task task) throws NoSuchTaskException {
         try {
             task.setId(resultSet.getInt("id") + "");
             task.setName(resultSet.getString("nameString"));
@@ -184,9 +170,10 @@ public class SQLLiteDataStorage implements DataStorage {
             task.setDueDate(new java.util.Date(resultSet.getDate("dueDate").getTime()));
             task.setCreatedDate(new java.util.Date(resultSet.getDate("createdDate").getTime()));
             task.setUpdatedDate(new java.util.Date(resultSet.getDate("updatedDate").getTime()));
+
+
         } catch (SQLException e) {
             throw new NoSuchTaskException("Problem mapping result set to task" + e.getMessage());
         }
-        return task;
     }
 }
