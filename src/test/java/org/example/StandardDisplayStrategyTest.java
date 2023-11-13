@@ -34,7 +34,8 @@ public class StandardDisplayStrategyTest {
 
         standardDisplayStrategy.display(task);
 
-        verify(output).print("Task: Sample Task Name\n" +
+        verify(output).print(
+                "Task: Sample Task Name\n" +
                 "Description: Sample Task\n" +
                 "Category: WORK\n" +
                 "Priority: LOW\n" +

@@ -131,7 +131,9 @@ public class SQLLiteDataStorage implements DataStorage {
     public String getNewId() {
         // Possibly wrong since multiple clients could be accessing the database at the same time
         if(cachedID!= null) {
-            return cachedID+1;
+            int newId = Integer.parseInt(cachedID) + 1;
+            cachedID = String.valueOf(newId);
+            return cachedID;
         }
 
         String newId = null;
@@ -143,8 +145,8 @@ public class SQLLiteDataStorage implements DataStorage {
 
 
             if (resultSet.next()) {
-                int maxId = resultSet.getInt(1);
-                newId = String.valueOf(maxId + 1);
+                int maxId = resultSet.getInt(1)+1;
+                newId = String.valueOf(maxId);
             } else {
                 // If the table is empty, start with ID 1
                 newId = "1";

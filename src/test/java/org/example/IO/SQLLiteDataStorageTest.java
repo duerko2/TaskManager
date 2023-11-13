@@ -10,6 +10,7 @@ import org.example.model.Task;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 
 
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SQLLiteDataStorageTest {
 
@@ -48,11 +49,83 @@ public class SQLLiteDataStorageTest {
     }
 
     @Test
-    public void testSaveTask() throws CouldNotSaveTaskException, NoSuchTaskException {
+    public void testSaveAndRetrieveTask() throws CouldNotSaveTaskException, NoSuchTaskException {
         Task saveTask = createSampleTask();
         dataStorage.saveTask(saveTask);
         Task retrieveTask = dataStorage.getTask(saveTask.getId());
         assertEquals(saveTask,retrieveTask);
+    }
+
+    @Test
+    public void testNewIDAlwaysStartsAsOne(){
+        String id = dataStorage.getNewId();
+        assertEquals("1",id);
+    }
+
+    @Test
+    public void testNewIDAfterInsertion() {
+        Task saveTask = createSampleTask();
+        assertDoesNotThrow( () -> {
+            dataStorage.saveTask(saveTask);
+        });
+        String id = dataStorage.getNewId();
+        assertEquals("2",id);
+    }
+
+    @Test
+    public void testNewIDAfterMultipleInsertions() {
+        for(int i = 0; i < 10; i++){
+            Task saveTask = createSampleTask();
+            assertDoesNotThrow( () -> {
+                dataStorage.saveTask(saveTask);
+            });
+        }
+        String id = dataStorage.getNewId();
+        assertEquals("11",id);
+    }
+
+    @Test
+    public void testNewIDAfterMixOfInsertionsAndDeletions() {
+        assertDoesNotThrow( () -> {
+            for (int i = 0; i < 10; i++) {
+                Task saveTask = createSampleTask();
+                dataStorage.saveTask(saveTask);
+            }
+            for (int i = 0; i < 5; i++) {
+                dataStorage.deleteTask(dataStorage.getTask(String.valueOf(i + 1)));
+            }
+            for (int i = 0; i < 10; i++) {
+                Task saveTask = createSampleTask();
+                dataStorage.saveTask(saveTask);
+            }
+            for (int i = 10; i < 15; i++) {
+                dataStorage.deleteTask(dataStorage.getTask(String.valueOf(i + 1)));
+            }
+        }
+        );
+        String id = dataStorage.getNewId();
+        assertEquals("21",id);
+    }
+
+    @Test
+    public void testCannotInsertSameIDTwice() {
+        Task saveTask = createSampleTask();
+
+        // First does not throw exception
+        assertDoesNotThrow( () -> {
+            dataStorage.saveTask(saveTask);
+        });
+
+        // Second throws exception
+        assertThrows(CouldNotSaveTaskException.class, () -> {
+            dataStorage.saveTask(saveTask);
+        });
+
+        saveTask.setId("2");
+        // No exception with new ID
+        assertDoesNotThrow( () -> {
+            dataStorage.saveTask(saveTask);
+        });
     }
 
     public void testDeleteTask() {
