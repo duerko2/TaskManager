@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -32,7 +33,9 @@ public class StandardDisplayStrategyTest {
     public void testDisplay() {
         Task task = createSampleTask("1");
 
-        standardDisplayStrategy.display(task);
+        assertDoesNotThrow(() -> {
+            standardDisplayStrategy.display(task);
+        });
 
         verify(output).print(
                 "Task: Sample Task Name\n" +
