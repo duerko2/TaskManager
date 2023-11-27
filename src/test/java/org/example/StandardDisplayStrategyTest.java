@@ -38,6 +38,8 @@ public class StandardDisplayStrategyTest {
         });
 
         verify(output).print(
+                "\n"+
+                "ID: "+ "1\n" +
                 "Task: Sample Task Name\n" +
                 "Description: Sample Task\n" +
                 "Category: WORK\n" +
@@ -45,7 +47,7 @@ public class StandardDisplayStrategyTest {
                 "Status: CREATED\n" +
                 "Due: 21/1/2024\n" +
                 "Created: 31/12/2023\n" +
-                "Updated: null"
+                "Updated: null"+"\n"
         );
     }
 

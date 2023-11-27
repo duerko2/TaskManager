@@ -48,7 +48,7 @@ public class TaskService {
                 priority,
                 date,
                 new Date(),
-                null
+                new Date()
         );
 
         try {

@@ -21,14 +21,16 @@ public class StandardDisplayStrategy implements DisplayStrategy {
         String createdDateOutput = createdDate.getDayOfMonth()+"/"+createdDate.getMonth().getValue()+"/"+createdDate.getYear();
         String dueDateOutput = dueDate.getDayOfMonth()+"/"+dueDate.getMonth().getValue()+"/"+dueDate.getYear();
         String updatedDateOutput = updatedDate == null ? "null" : updatedDate.getDayOfMonth()+"/"+updatedDate.getMonth().getValue()+"/"+updatedDate.getYear();
-        output.print("Task: " + task.getName() + "\n" +
+        output.print("\n"+
+                "ID: "+task.getId()+"\n"+
+                "Task: " + task.getName() + "\n" +
                 "Description: " + task.getDescription() + "\n" +
                 "Category: " + task.getCategory() + "\n" +
                 "Priority: " + task.getPriority() + "\n" +
                 "Status: " + task.getStatus() + "\n" +
                 "Due: " + dueDateOutput + "\n" +
                 "Created: " + createdDateOutput + "\n" +
-                "Updated: " + updatedDateOutput
+                "Updated: " + updatedDateOutput+"\n"
         );
     }
 
